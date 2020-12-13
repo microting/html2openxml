@@ -68,6 +68,13 @@ namespace HtmlToOpenXml
         /// <value>Heading</value>
         public string HeadingStyle { get; set; } = "Heading";
 
+        /// <summary>
+        /// Default style for numbered headings
+        /// Appends the level at the end of the style name
+        /// </summary>
+        /// <value>NumberedHeading</value>
+        public string NumberedHeadingStyle { get; set; } = "NumberedHeading";
+
         #endregion
 
         #region Hyperlink

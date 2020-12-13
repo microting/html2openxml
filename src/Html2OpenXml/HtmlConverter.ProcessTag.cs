@@ -273,8 +273,6 @@ namespace HtmlToOpenXml
 			AlternateProcessHtmlChunks(en, "</h" + level + ">");
 
 			Paragraph p = new Paragraph(elements);
-			p.InsertInProperties(prop =>
-				prop.ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.HeadingStyle + level, StyleValues.Paragraph) });
 
 			// Check if the line starts with a number format (1., 1.1., 1.1.1.)
 			// If it does, make sure we make the heading a numbered item
@@ -284,6 +282,10 @@ namespace HtmlToOpenXml
 			// Make sure we only grab the heading if it starts with a number
 			if (regexMatch.Groups.Count > 1 && regexMatch.Groups[1].Captures.Count > 0)
 			{
+				// Apply numbered heading style
+				p.InsertInProperties(prop =>
+					prop.ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.NumberedHeadingStyle + level, StyleValues.Paragraph) });
+
 				int indentLevel = regexMatch.Groups[1].Captures.Count;
 
 				// Strip numbers from text
@@ -291,10 +293,16 @@ namespace HtmlToOpenXml
 
 				htmlStyles.NumberingList.ApplyNumberingToHeadingParagraph(p, indentLevel);
 			}
+			else
+			{
+				// Apply normal heading style
+				p.InsertInProperties(prop =>
+					prop.ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.HeadingStyle + level, StyleValues.Paragraph) });
+			}
 
 			htmlStyles.Paragraph.ApplyTags(p);
 			htmlStyles.Paragraph.EndTag("<h" + level + ">");
-			
+
 			this.elements.Clear();
 			AddParagraph(p);
 			AddParagraph(currentParagraph = htmlStyles.Paragraph.NewParagraph());

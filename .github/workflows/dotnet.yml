@@ -1,0 +1,25 @@
+name: .NET
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Restore dependencies
+      run: dotnet restore HtmlToOpenXml.sln
+    - name: Build
+      run: dotnet build --no-restore /p:Configuration=Release HtmlToOpenXml.sln
+    - name: Test
+      run: dotnet test --no-build --verbosity normal ./test/HtmlToOpenXml.Tests/HtmlToOpenXml.Tests.csproj

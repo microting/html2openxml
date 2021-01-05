@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Html2OpenXml\HtmlToOpenXml.csproj" />
+    <EmbeddedResource Include="Resources\*" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\*" />
+    <ProjectReference Include="..\..\src\Html2OpenXml\Microting.HtmlToOpenXml.csproj" />
   </ItemGroup>
 
 </Project>

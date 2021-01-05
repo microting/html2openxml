@@ -1,10 +1,10 @@
 ﻿/* Copyright (C) Olivier Nizet https://github.com/onizet/html2openxml - All Rights Reserved
- * 
+ *
  * This source is subject to the Microsoft Permissive License.
  * Please see the License.txt file for more information.
  * All other rights reserved.
- * 
- * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -20,7 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.IO
 {
     /// <summary>
     /// Utility class to extract some information of an image file without reading the entire file.
@@ -29,7 +29,7 @@ namespace HtmlToOpenXml
     {
         // https://en.wikipedia.org/wiki/List_of_file_signatures
 
-        enum FileType { Unrecognized, Bitmap, Gif, Png, Jpeg, Emf }
+        public enum FileType { Unrecognized, Bitmap, Gif, Png, Jpeg, Emf }
 
         private static readonly byte[] pngSignatureBytes = { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
 
@@ -46,6 +46,23 @@ namespace HtmlToOpenXml
         private static readonly int MaxMagicBytesLength = imageFormatDecoders
             .Keys.OrderByDescending(x => x.Length).First().Length;
 
+
+        /// <summary>
+        /// Read a image stream and try to detect its file type.
+        /// </summary>
+        /// <param name="stream">The readable image stream</param>
+        /// <param name="type">The guess file type.</param>
+        /// <returns>Returns true if the detection was successful.</returns>
+        public static bool TryDetectFileType(Stream stream, out FileType type)
+        {
+            using (SequentialBinaryReader reader = new SequentialBinaryReader(stream, leaveOpen: true))
+            {
+                type = DetectFileType(reader);
+                stream.Seek(0L, SeekOrigin.Begin);
+                return type != FileType.Unrecognized;
+            }
+        }
+
         /// <summary>
         /// Gets the dimensions of an image.
         /// </summary>
@@ -54,7 +71,7 @@ namespace HtmlToOpenXml
         /// <exception cref="ArgumentException">The image was of an unrecognised format.</exception>
         public static Size GetDimensions(Stream stream)
         {
-            using (SequentialBinaryReader reader = new SequentialBinaryReader(stream))
+            using (SequentialBinaryReader reader = new SequentialBinaryReader(stream, leaveOpen: true))
             {
                 FileType type = DetectFileType (reader);
                 stream.Seek(0L, SeekOrigin.Begin);
@@ -235,7 +252,7 @@ namespace HtmlToOpenXml
             // EMR_HEADER: Type + Size + Bounds
             reader.Skip(4 + 4 + 16);
 
-            // Frame: specify the rectangular inclusive-inclusive dimensions, 
+            // Frame: specify the rectangular inclusive-inclusive dimensions,
             // in .01 millimeter units, of a rectangle that surrounds the image stored in the metafile.
             int left   = reader.ReadInt32();
             int top    = reader.ReadInt32();

@@ -1,10 +1,10 @@
 ﻿/* Copyright (C) Olivier Nizet https://github.com/onizet/html2openxml - All Rights Reserved
- * 
+ *
  * This source is subject to the Microsoft Permissive License.
  * Please see the License.txt file for more information.
  * All other rights reserved.
- * 
- * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -12,11 +12,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.IO;
 
 namespace HtmlToOpenXml
 {
@@ -31,18 +31,6 @@ namespace HtmlToOpenXml
 	/// </summary>
 	public partial class HtmlConverter
 	{
-		/// <summary>
-		/// Occurs when an image tag was detected and you want to manage yourself the download of the data.
-		/// </summary>
-		public event EventHandler<ProvisionImageEventArgs> ProvisionImage;
-
-		sealed class CachedImagePart
-		{
-			public ImagePart Part;
-			public Int32 Width;
-			public Int32 Height;
-		}
-
 		private MainDocumentPart mainPart;
 		/// <summary>The list of paragraphs that will be returned.</summary>
 		private IList<OpenXmlCompositeElement> paragraphs;
@@ -51,11 +39,11 @@ namespace HtmlToOpenXml
 		private Paragraph currentParagraph;
 		private Int32 footnotesRef = 1, endnotesRef = 1, figCaptionRef = -1;
 		private Dictionary<String, Action<HtmlEnumerator>> knownTags;
-		private Dictionary<Uri, CachedImagePart> knownImageParts;
-		private TableContext tables;
-		private HtmlDocumentStyle htmlStyles;
-		private uint drawingObjId, imageObjId;
-		private Uri baseImageUri;
+        private ImagePrefetcher imagePrefetcher;
+        private TableContext tables;
+        private readonly HtmlDocumentStyle htmlStyles;
+        private readonly IWebRequest webRequester;
+        private uint drawingObjId, imageObjId;
 
 
 
@@ -64,16 +52,23 @@ namespace HtmlToOpenXml
 		/// </summary>
 		/// <param name="mainPart">The mainDocumentPart of a document where to write the conversion to.</param>
 		/// <remarks>We preload some configuration from inside the document such as style, bookmarks,...</remarks>
-		public HtmlConverter(MainDocumentPart mainPart)
-		{
-			this.mainPart = mainPart ?? throw new ArgumentNullException("mainPart");
-			this.RenderPreAsTable = true;
-			this.ImageProcessing = ImageProcessing.AutomaticDownload;
-			this.knownTags = InitKnownTags();
-			this.htmlStyles = new HtmlDocumentStyle(mainPart);
-			this.knownImageParts = new Dictionary<Uri, CachedImagePart>();
-			this.WebProxy = new WebProxy();
-		}
+        public HtmlConverter(MainDocumentPart mainPart) : this(mainPart, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="mainPart">The mainDocumentPart of a document where to write the conversion to.</param>
+        /// <param name="webRequester">Factory to download the images.</param>
+        /// <remarks>We preload some configuration from inside the document such as style, bookmarks,...</remarks>
+        public HtmlConverter(MainDocumentPart mainPart, IWebRequest webRequester = null)
+        {
+            this.knownTags = InitKnownTags();
+            this.mainPart = mainPart ?? throw new ArgumentNullException("mainPart");
+            this.htmlStyles = new HtmlDocumentStyle(mainPart);
+            this.webRequester = webRequester ?? new DefaultWebRequest();
+        }
 
 		/// <summary>
 		/// Start the parse processing.
@@ -99,10 +94,10 @@ namespace HtmlToOpenXml
 
 			// Start a new processing
 			paragraphs.Add(currentParagraph = htmlStyles.Paragraph.NewParagraph());
-			if (htmlStyles.DefaultParagraphStyle != null)
+			if (htmlStyles.DefaultStyles.ParagraphStyle != null)
 			{
 				currentParagraph.ParagraphProperties = new ParagraphProperties {
-					ParagraphStyleId = new ParagraphStyleId { Val = htmlStyles.DefaultParagraphStyle }
+					ParagraphStyleId = new ParagraphStyleId { Val = htmlStyles.DefaultStyles.ParagraphStyle }
 				};
 			}
 
@@ -129,20 +124,27 @@ namespace HtmlToOpenXml
 
             var paragraphs = Parse(html);
 
-            Body body = mainPart.Document.Body;
-            SectionProperties sectionProperties = mainPart.Document.Body.GetLastChild<SectionProperties>();
+			Body body = mainPart.Document.Body;
+			SectionProperties sectionProperties = body.GetLastChild<SectionProperties>();
+			for (int i = 0; i < paragraphs.Count; i++)
+				body.Append(paragraphs[i]);
 
-            for (int i = 0; i < paragraphs.Count; i++)
-                body.Append(paragraphs[i]);
+			// move the paragraph with BookmarkStart `_GoBack` as the last child
+			var p = body.GetFirstChild<Paragraph>();
+			if (p != null && p.HasChild<BookmarkStart>())
+			{
+				p.Remove();
+				body.Append(p);
+			}
 
-            // Push the sectionProperties as the last element of the Body
-            // (required by OpenXml schema to avoid the bad formatting of the document)
-            if (sectionProperties != null)
-            {
-                sectionProperties.Remove();
-                body.Append(sectionProperties);
-            }
-        }
+			// Push the sectionProperties as the last element of the Body
+			// (required by OpenXml schema to avoid the bad formatting of the document)
+			if (sectionProperties != null)
+			{
+				sectionProperties.Remove();
+				body.Append(sectionProperties);
+			}
+		}
 
 		#region RemoveEmptyParagraphs
 
@@ -239,7 +241,7 @@ namespace HtmlToOpenXml
 		#region AddParagraph
 
 		/// <summary>
-		/// Add a new paragraph, table, ... to the list of processed paragrahs. This method takes care of 
+		/// Add a new paragraph, table, ... to the list of processed paragrahs. This method takes care of
 		/// adding the new element to the current table if it exists.
 		/// </summary>
 		private void AddParagraph(OpenXmlCompositeElement element)
@@ -321,11 +323,11 @@ namespace HtmlToOpenXml
 				new Footnote(
 					p = new Paragraph(
 						new ParagraphProperties {
-							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle("FootnoteText", StyleValues.Paragraph) }
+							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.FootnoteTextStyle, StyleValues.Paragraph) }
 						},
 						markerRun = new Run(
 							new RunProperties {
-								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle("FootnoteReference", StyleValues.Character) }
+								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.FootnoteReferenceStyle, StyleValues.Character) }
 							},
 							new FootnoteReferenceMark()),
 						new Run(
@@ -350,7 +352,7 @@ namespace HtmlToOpenXml
 
                 h.Append(new Run(
                     new RunProperties {
-                        RunStyle = new RunStyle() { Val = htmlStyles.GetStyle("Hyperlink", StyleValues.Character) }
+                        RunStyle = new RunStyle() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.HyperlinkStyle, StyleValues.Character) }
                     },
                     new Text(description)));
                 p.Append(h);
@@ -422,11 +424,11 @@ namespace HtmlToOpenXml
 				new Endnote(
 					new Paragraph(
 						new ParagraphProperties {
-							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle("EndnoteText", StyleValues.Paragraph) }
+							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.EndnoteTextStyle, StyleValues.Paragraph) }
 						},
 						markerRun = new Run(
 							new RunProperties {
-								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle("EndnoteReference", StyleValues.Character) }
+								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.EndnoteReferenceStyle, StyleValues.Character) }
 							},
 							new FootnoteReferenceMark()),
 						new Run(
@@ -468,7 +470,7 @@ namespace HtmlToOpenXml
 
 		#region AddImagePart
 
-		private Drawing AddImagePart(Uri imageUrl, String imageSource, String alt, Size preferredSize)
+		private Drawing AddImagePart(String imageSource, String alt, Size preferredSize)
 		{
 			if (imageObjId == UInt32.MinValue)
 			{
@@ -491,63 +493,25 @@ namespace HtmlToOpenXml
 				if (imageObjId > 1) imageObjId++;
 			}
 
-			// Cache all the ImagePart processed to avoid downloading the same image.
-			CachedImagePart imagePart = null;
+            // Cache all the ImagePart processed to avoid downloading the same image.
+            if (imagePrefetcher == null)
+                imagePrefetcher = new ImagePrefetcher(mainPart, webRequester);
 
-			// if imageUrl is null, we may consider imageSource is a DataUri.
-			// thus, no need to download and cache anything
-			if (imageUrl == null || !knownImageParts.TryGetValue(imageUrl, out imagePart))
-			{
-				HtmlImageInfo iinfo = null;
-				ImageProvisioningProvider provider = new ImageProvisioningProvider();
+            HtmlImageInfo iinfo = imagePrefetcher.Download(imageSource);
 
-				if (imageUrl == null)
-                    iinfo = provider.DownloadData(DataUri.Parse(imageSource));
-                else if (this.ImageProcessing == ImageProcessing.ManualProvisioning)
-                {
-                    // as HtmlImageInfo is a class, the EventArgs will act as a proxy
-                    iinfo = new HtmlImageInfo() { Size = preferredSize };
-                    ProvisionImageEventArgs args = new ProvisionImageEventArgs(imageUrl, iinfo);
-                    OnProvisionImage(args);
-
-                    // did the user want to ignore this image?
-                    if (args.Cancel) return null;
-                }
-
-                // Automatic Processing or the user did not supply himself the image and did not cancel the provisioning.
-                // We download ourself the image.
-                if (iinfo == null || (iinfo.RawData == null && imageUrl.IsAbsoluteUri))
-                    iinfo = provider.DownloadData(imageUrl);
-
-				if (!ImageProvisioningProvider.Provision(iinfo,imageUrl)) return null;
-
-				ImagePart ipart = mainPart.AddImagePart(iinfo.Type.Value);
-				imagePart = new CachedImagePart() { Part = ipart };
-				imagePart.Width = iinfo.Size.Width;
-				imagePart.Height = iinfo.Size.Height;
-
-				using (Stream outputStream = ipart.GetStream(FileMode.Create))
-				{
-					outputStream.Write(iinfo.RawData, 0, iinfo.RawData.Length);
-					outputStream.Seek(0L, SeekOrigin.Begin);
-				}
-
-				if (imageUrl != null) // don't need to cache inlined-image
-					knownImageParts.Add(imageUrl, imagePart);
-			}
+            if (iinfo == null)
+                return null;
 
 			if (preferredSize.IsEmpty)
 			{
-				preferredSize.Width = imagePart.Width;
-				preferredSize.Height = imagePart.Height;
+				preferredSize = iinfo.Size;
 			}
 			else if (preferredSize.Width <= 0 || preferredSize.Height <= 0)
 			{
-				Size actualSize = new Size(imagePart.Width, imagePart.Height);
+				Size actualSize = iinfo.Size;
 				preferredSize = ImageHeader.KeepAspectRatio(actualSize, preferredSize);
 			}
 
-			String imagePartId = mainPart.GetIdOfPart(imagePart.Part);
 			long widthInEmus = new Unit(UnitMetric.Pixel, preferredSize.Width).ValueInEmus;
 			long heightInEmus = new Unit(UnitMetric.Pixel, preferredSize.Height).ValueInEmus;
 
@@ -571,7 +535,7 @@ namespace HtmlToOpenXml
 										new a.PictureLocks() { NoChangeAspect = true, NoChangeArrowheads = true })
 								},
 								new pic.BlipFill(
-									new a.Blip() { Embed = imagePartId },
+									new a.Blip() { Embed = iinfo.ImagePartId },
 									new a.SourceRectangle(),
 									new a.Stretch(
 										new a.FillRectangle())),
@@ -804,20 +768,6 @@ namespace HtmlToOpenXml
 
 		#endregion
 
-        // Events
-
-        #region OnProvisionImage
-
-        /// <summary>
-		/// Raises the ProvisionImage event.
-		/// </summary>
-		protected virtual void OnProvisionImage(ProvisionImageEventArgs e)
-		{
-			if (ProvisionImage != null) ProvisionImage(this, e);
-		}
-
-		#endregion
-
 		//____________________________________________________________________
 		//
 		// Configuration
@@ -841,8 +791,8 @@ namespace HtmlToOpenXml
 		/// <br/>
 		/// It exists some predefined anchors used by Word such as _top to refer to the top of the document.
 		/// The anchor <i>#_top</i> is always accepted regardless this property value.
-		/// For others anchors like refering to your own bookmark or a title, add a 
-		/// <see cref="DocumentFormat.OpenXml.Wordprocessing.BookmarkStart"/> and 
+		/// For others anchors like refering to your own bookmark or a title, add a
+		/// <see cref="DocumentFormat.OpenXml.Wordprocessing.BookmarkStart"/> and
 		/// <see cref="DocumentFormat.OpenXml.Wordprocessing.BookmarkEnd"/> elements
 		/// and set the value of href to <i>#&lt;name of your bookmark&gt;</i>.
 		/// </remarks>
@@ -856,39 +806,36 @@ namespace HtmlToOpenXml
 			get { return htmlStyles; }
 		}
 
-		/// <summary>
-		/// Gets or sets how the &lt;img&gt; tag should be handled.
-		/// </summary>
-		public ImageProcessing ImageProcessing { get; set; }
+        /// <summary>
+        /// Gets or sets how the &lt;img&gt; tag should be handled.
+        /// </summary>
+        [Obsolete("Provide a IWebRequest implementation or use DefaultWebRequest")]
+        public ImageProcessing ImageProcessing { get; set; } = ImageProcessing.AutomaticDownload;
 
-		/// <summary>
-		/// Gets or sets the base Uri used to automaticaly resolve relative images 
-		/// if used with ImageProcessing = AutomaticDownload.
-		/// </summary>
-		public Uri BaseImageUrl
-		{
-			get { return this.baseImageUri; }
-			set
-			{
-				if (value != null)
-				{
-					if (!value.IsAbsoluteUri)
-						throw new ArgumentException("BaseImageUrl should be an absolute Uri");
-					// in case of local uri (file:///) we need to be sure the uri ends with '/' or the
-					// combination of uri = new Uri(@"C:\users\demo\images", "pic.jpg");
-					// will eat the images part
-					if (value.IsFile && value.LocalPath[value.LocalPath.Length - 1] != '/')
-						value = new Uri(value.OriginalString + '/');
-				} 
-				this.baseImageUri = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the proxy used to download images.
-		/// </summary>
-		[Obsolete("Consider System.Net.Http.HttpClient.DefaultProxy instead")]
-		public WebProxy WebProxy { get; set; }
+        /// <summary>
+        /// Gets or sets the base Uri used to automaticaly resolve relative images
+        /// if used with ImageProcessing = AutomaticDownload.
+        /// </summary>
+        [Obsolete("Provide a IWebRequest implementation or use DefaultWebRequest.BaseImageUrl")]
+        public Uri BaseImageUrl
+        {
+            get { return (webRequester as DefaultWebRequest)?.BaseImageUrl; }
+            set
+            {
+                if (value != null)
+                {
+                    if (!value.IsAbsoluteUri)
+                        throw new ArgumentException("BaseImageUrl should be an absolute Uri");
+                    // in case of local uri (file:///) we need to be sure the uri ends with '/' or the
+                    // combination of uri = new Uri(@"C:\users\demo\images", "pic.jpg");
+                    // will eat the images part
+                    if (value.IsFile && value.LocalPath[value.LocalPath.Length - 1] != '/')
+                        value = new Uri(value.OriginalString + '/');
+                }
+                if (webRequester is DefaultWebRequest wr)
+                    wr.BaseImageUrl = value;
+            }
+        }
 
 		/// <summary>
 		/// Gets or sets where the Legend tag (&lt;caption&gt;) should be rendered (above or below the table).

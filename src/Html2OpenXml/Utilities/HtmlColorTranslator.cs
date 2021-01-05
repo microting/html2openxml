@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HtmlToOpenXml.Primitives;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Utilities
 {
     /// <summary>
     /// Helper class to translate a named color to its ARGB representation.

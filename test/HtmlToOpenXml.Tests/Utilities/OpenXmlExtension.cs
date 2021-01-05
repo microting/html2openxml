@@ -9,9 +9,10 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using DocumentFormat.OpenXml;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Utilities
 {
 	/// <summary>
 	/// Helper class that provide some extension methods to OpenXml SDK.

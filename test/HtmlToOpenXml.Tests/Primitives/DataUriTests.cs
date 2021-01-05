@@ -1,7 +1,7 @@
 using HtmlToOpenXml.IO;
 using NUnit.Framework;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Primitives
 {
     /// <summary>
     /// Tests inline image (base 64).

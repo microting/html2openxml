@@ -9,11 +9,11 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Diagnostics;
-using System.Globalization;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Utilities
 {
     /// <summary>
     /// Logging class to trace debugging information during the conversion process.

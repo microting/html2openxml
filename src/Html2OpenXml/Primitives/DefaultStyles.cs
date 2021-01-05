@@ -10,7 +10,7 @@
  * PARTICULAR PURPOSE.
  */
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Contains the default styles of Word elements

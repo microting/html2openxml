@@ -12,6 +12,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using HtmlToOpenXml.Utilities;
 
 namespace HtmlToOpenXml.IO
 {

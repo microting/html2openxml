@@ -9,13 +9,14 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
-using System.Text;
-using System.IO;
-using System.Globalization;
-using System.Collections.Generic;
 
-namespace HtmlToOpenXml
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
+
+namespace HtmlToOpenXml.Utilities
 {
 	/// <summary>
 	/// Helper class that can be found in System.Web.HttpUtility. This class allows us to avoid a reference to System.Web.

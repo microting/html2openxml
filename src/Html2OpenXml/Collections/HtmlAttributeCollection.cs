@@ -9,13 +9,16 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Primitives;
+using HtmlToOpenXml.Utilities;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Collections
 {
 	using w = DocumentFormat.OpenXml.Wordprocessing;
 

@@ -10,7 +10,7 @@
  * PARTICULAR PURPOSE.
  */
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Represents the location of cell in a table (2d matrix).
@@ -21,7 +21,7 @@ namespace HtmlToOpenXml
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref='HtmlToOpenXml.CellPosition'/> class from
+        /// Initializes a new instance of the <see cref='CellPosition'/> class from
         /// the specified location.
         /// </summary>
         public CellPosition(int row, int column)

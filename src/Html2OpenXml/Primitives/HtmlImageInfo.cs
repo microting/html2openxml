@@ -9,9 +9,10 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using DocumentFormat.OpenXml.Packaging;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
 	/// <summary>
 	/// Represents an image and its metadata.

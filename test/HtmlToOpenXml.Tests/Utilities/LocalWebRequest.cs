@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlToOpenXml.IO;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Utilities
 {
     sealed class LocalWebRequest : IWebRequest
     {

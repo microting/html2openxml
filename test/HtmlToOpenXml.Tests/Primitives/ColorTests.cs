@@ -1,6 +1,7 @@
+using HtmlToOpenXml.Primitives;
 using NUnit.Framework;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Primitives
 {
     /// <summary>
     /// Tests Html color style attribute.

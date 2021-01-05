@@ -10,7 +10,7 @@
  * PARTICULAR PURPOSE.
  */
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
 	/// <summary>
 	/// Specifies the measurement values of a Html Unit.

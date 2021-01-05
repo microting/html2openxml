@@ -16,7 +16,10 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Collections;
 using HtmlToOpenXml.IO;
+using HtmlToOpenXml.Primitives;
+using HtmlToOpenXml.Utilities;
 
 namespace HtmlToOpenXml
 {

@@ -9,9 +9,10 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
 	/// <summary>
 	/// Specifies some decoration to apply to a text.

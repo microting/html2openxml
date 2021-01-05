@@ -4,7 +4,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Utilities
 {
     /// <summary>
     /// Test Case with support to generic Test methods.

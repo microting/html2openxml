@@ -9,9 +9,8 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
 	/// <summary>
 	/// Specifies the font style for a text.

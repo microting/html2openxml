@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Tests.Utilities;
 
 namespace HtmlToOpenXml.Tests
 {
@@ -32,13 +33,13 @@ namespace HtmlToOpenXml.Tests
 
             runProperties = elements[0].ChildElements[1].GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
-            Assert.That(runProperties.HasChild<Italic>(), Is.EqualTo(true));
-            Assert.That(runProperties.HasChild<Bold>(), Is.EqualTo(false));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Bold>(runProperties), Is.EqualTo(false));
 
             runProperties = elements[0].ChildElements[2].GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
-            Assert.That(runProperties.HasChild<Italic>(), Is.EqualTo(true));
-            Assert.That(runProperties.HasChild<Bold>(), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Bold>(runProperties), Is.EqualTo(true));
 
             elements = converter.Parse("<p>First paragraph in semi-<i>italics <p>Second paragraph still italic <b>but also in bold</b></p>");
             Assert.That(elements.Count, Is.EqualTo(2));
@@ -50,17 +51,17 @@ namespace HtmlToOpenXml.Tests
 
             runProperties = elements[0].ChildElements[1].GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
-            Assert.That(runProperties.HasChild<Italic>(), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties), Is.EqualTo(true));
 
             runProperties = elements[1].FirstChild.GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
-            Assert.That(runProperties.HasChild<Italic>(), Is.EqualTo(true));
-            Assert.That(runProperties.HasChild<Bold>(), Is.EqualTo(false));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Bold>(runProperties), Is.EqualTo(false));
 
             runProperties = elements[1].ChildElements[1].GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
-            Assert.That(runProperties.HasChild<Italic>(), Is.EqualTo(true));
-            Assert.That(runProperties.HasChild<Bold>(), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties), Is.EqualTo(true));
+            Assert.That(Utilities.OpenXmlExtension.HasChild<Bold>(runProperties), Is.EqualTo(true));
 
             // this should generate a new paragraph with its own style
             elements = converter.Parse("<p>First paragraph in <i>italics </i><p>Second paragraph not in italic</p>");

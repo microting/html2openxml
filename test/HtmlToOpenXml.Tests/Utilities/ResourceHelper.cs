@@ -1,11 +1,12 @@
 /*
  * Copyright (c) 2017 Deal Stream sàrl. All rights reserved
  */
+
 using System.IO;
 using System.Reflection;
 using System.Resources;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.Utilities
 {
     /// <summary>
     /// Helper class to get an embedded resources.

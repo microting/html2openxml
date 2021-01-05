@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using DocumentFormat.OpenXml.Packaging;
+using HtmlToOpenXml.Primitives;
 
 namespace HtmlToOpenXml.IO
 {

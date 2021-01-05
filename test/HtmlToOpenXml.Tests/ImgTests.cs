@@ -3,6 +3,7 @@ using NUnit.Framework;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Tests.Utilities;
 
 namespace HtmlToOpenXml.Tests
 {

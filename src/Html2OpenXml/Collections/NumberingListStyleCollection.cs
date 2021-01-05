@@ -1,14 +1,15 @@
 ﻿/* Copyright (C) Olivier Nizet https://github.com/onizet/html2openxml - All Rights Reserved
- * 
+ *
  * This source is subject to the Microsoft Permissive License.
  * Please see the License.txt file for more information.
  * All other rights reserved.
- * 
- * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,8 +17,10 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Primitives;
+using HtmlToOpenXml.Utilities;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Collections
 {
 	sealed class NumberingListStyleCollection
 	{
@@ -190,7 +193,7 @@ namespace HtmlToOpenXml
 				foreach (var abstractNum in absNumChildren)
 				{
 					// Check if we can find this in the existing document
-					addNewAbstractNums = addNewAbstractNums 
+					addNewAbstractNums = addNewAbstractNums
 						|| !existingAbstractNums.Any(a => a.AbstractNumDefinitionName != null && a.AbstractNumDefinitionName.Val.Value == abstractNum.AbstractNumDefinitionName.Val.Value);
 				}
 			} else {
@@ -218,7 +221,7 @@ namespace HtmlToOpenXml
 
 				knownAbsNumIds = absNumChildren
 					.ToDictionary(a => a.AbstractNumDefinitionName.Val.Value, a => a.AbstractNumberId.Value);
-			} 
+			}
 			else
 			{
 				knownAbsNumIds = existingAbstractNums
@@ -226,7 +229,7 @@ namespace HtmlToOpenXml
 					.ToDictionary(a => a.AbstractNumDefinitionName.Val.Value, a => a.AbstractNumberId.Value);
 			}
 
-			// compute the next list instance ID seed. We start at 1 because 0 has a special meaning: 
+			// compute the next list instance ID seed. We start at 1 because 0 has a special meaning:
 			// The w:numId can contain a value of 0, which is a special value that indicates that numbering was removed
 			// at this level of the style hierarchy. While processing this markup, if the w:val='0',
 			// the paragraph does not have a list item (http://msdn.microsoft.com/en-us/library/ee922775(office.14).aspx)
@@ -288,16 +291,16 @@ namespace HtmlToOpenXml
 				NumberingInstance existingTitleNumbering = mainPart.NumberingDefinitionsPart.Numbering
 					.Elements<NumberingInstance>()
 					.FirstOrDefault(n => n != null && n.AbstractNumId.Val == absNumberId);
-				
+
 				if (existingTitleNumbering != null)
 					headingNumberingId = existingTitleNumbering.NumberID.Value;
-				else 
+				else
 				{
 					headingNumberingId = CreateList(HEADING_NUMBERING_NAME, true);
 					EnsureMultilevel(absNumberId, true);
 				}
 			}
-				
+
 			return headingNumberingId;
 		}
 
@@ -455,9 +458,9 @@ namespace HtmlToOpenXml
 						LevelIndex = i - 1
 					};
 
-					if (cascading) 
+					if (cascading)
 					{
-						// if we're cascading, that means we don't want any identation 
+						// if we're cascading, that means we don't want any identation
 						// + our leveltext should contain the previous levels as well
 						StringBuilder lvlText = new StringBuilder();
 
@@ -467,7 +470,7 @@ namespace HtmlToOpenXml
 						level.LevelText = new LevelText() { Val = lvlText.ToString() };
 					} else {
 						level.LevelText = new LevelText() { Val = "%" + i + "." };
-						level.PreviousParagraphProperties = 
+						level.PreviousParagraphProperties =
 							new PreviousParagraphProperties {
 								Indentation = new Indentation() { Left = (720 * i).ToString(CultureInfo.InvariantCulture), Hanging = "360" }
 							};

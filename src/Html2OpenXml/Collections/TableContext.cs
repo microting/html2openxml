@@ -9,11 +9,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
+
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Primitives;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Collections
 {
 	/// <summary>
 	/// Holds the tables in the order we discover them (to support nested tables).

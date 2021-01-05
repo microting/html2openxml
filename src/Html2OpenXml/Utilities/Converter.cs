@@ -9,11 +9,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
-using System.Globalization;
-using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace HtmlToOpenXml
+using System;
+using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Primitives;
+
+namespace HtmlToOpenXml.Utilities
 {
 	/// <summary>
 	/// Provides some utilies methods for translating Http attributes to OpenXml elements.

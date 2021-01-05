@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Tests.Utilities;
+using HtmlToOpenXml.Utilities;
 
 namespace HtmlToOpenXml.Tests
 {
@@ -50,11 +52,11 @@ text-decoration:underline;
             RunProperties runProperties = run.GetFirstChild<RunProperties>();
             Assert.IsNotNull(runProperties);
             Assert.Multiple(() => {
-                Assert.IsTrue(runProperties.HasChild<Bold>());
-                Assert.IsTrue(runProperties.HasChild<Italic>());
-                Assert.IsTrue(runProperties.HasChild<FontSize>());
-                Assert.IsTrue(runProperties.HasChild<Underline>());
-                Assert.IsTrue(runProperties.HasChild<Color>());
+                Assert.IsTrue(Utilities.OpenXmlExtension.HasChild<Bold>(runProperties));
+                Assert.IsTrue(Utilities.OpenXmlExtension.HasChild<Italic>(runProperties));
+                Assert.IsTrue(Utilities.OpenXmlExtension.HasChild<FontSize>(runProperties));
+                Assert.IsTrue(Utilities.OpenXmlExtension.HasChild<Underline>(runProperties));
+                Assert.IsTrue(Utilities.OpenXmlExtension.HasChild<Color>(runProperties));
             });
         }
 

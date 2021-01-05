@@ -9,12 +9,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Represents an highlight color.

@@ -13,6 +13,9 @@ using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Collections;
+using HtmlToOpenXml.Primitives;
+using HtmlToOpenXml.Utilities;
 
 namespace HtmlToOpenXml
 {

@@ -10,7 +10,7 @@
  * PARTICULAR PURPOSE.
  */
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Represents a dimension in 2D coordinate space.
@@ -18,12 +18,12 @@ namespace HtmlToOpenXml
     public struct Size
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref='HtmlToOpenXml.Size'/> class.
+        /// Initializes a new instance of the <see cref='Size'/> class.
         /// </summary>
         public static readonly Size Empty = new Size();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref='HtmlToOpenXml.Size'/> class from
+        /// Initializes a new instance of the <see cref='Size'/> class from
         /// the specified dimensions.
         /// </summary>
         public Size(int width, int height)

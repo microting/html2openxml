@@ -9,10 +9,11 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
-using System.Collections.Generic;
 
-namespace HtmlToOpenXml
+using System.Collections.Generic;
+using HtmlToOpenXml.Primitives;
+
+namespace HtmlToOpenXml.Collections
 {
     /// <summary>
     /// Typed sorted list on span in table.

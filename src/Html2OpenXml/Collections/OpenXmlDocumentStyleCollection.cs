@@ -9,11 +9,13 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml.Utilities;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Collections
 {
 	/// <summary>
 	/// Typed collection that holds the Style of a document and their name.

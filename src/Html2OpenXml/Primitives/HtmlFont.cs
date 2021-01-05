@@ -9,9 +9,11 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
 
-namespace HtmlToOpenXml
+using System;
+using HtmlToOpenXml.Utilities;
+
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Represents a Html font (15px arial,sans-serif).

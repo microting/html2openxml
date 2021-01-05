@@ -9,11 +9,11 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
-using System;
-using System.ComponentModel;
-using System.Globalization;
 
-namespace HtmlToOpenXml
+using System;
+using HtmlToOpenXml.Utilities;
+
+namespace HtmlToOpenXml.Primitives
 {
     /// <summary>
     /// Represents a Html Unit (ie: 120px, 10em, ...).

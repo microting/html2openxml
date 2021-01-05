@@ -9,11 +9,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  */
+
 using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 
-namespace HtmlToOpenXml
+namespace HtmlToOpenXml.Collections
 {
     using TagsAtSameLevel = System.ArraySegment<DocumentFormat.OpenXml.OpenXmlElement>;
 

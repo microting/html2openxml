@@ -1,7 +1,9 @@
 using HtmlToOpenXml.IO;
+using HtmlToOpenXml.Primitives;
+using HtmlToOpenXml.Tests.Utilities;
 using NUnit.Framework;
 
-namespace HtmlToOpenXml.Tests
+namespace HtmlToOpenXml.Tests.ImageFormats
 {
     /// <summary>
     /// Tests acronym, abbreviation and blockquotes.

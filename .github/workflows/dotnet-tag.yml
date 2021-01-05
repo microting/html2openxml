@@ -24,8 +24,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore /p:Configuration=Release HtmlToOpenXml.sln
     - name: Test
-      run: dotnet test ./test/HtmlToOpenXml.Tests/HtmlToOpenXml.Tests.csproj --verbosity n
+      run: dotnet test ./test/Microting.HtmlToOpenXml.Tests/Microting.HtmlToOpenXml.Tests.csproj --verbosity n
     - name: Pack
       run: dotnet pack HtmlToOpenXml.sln -c Release -o ./artifacts -p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
     - name: Push generated package to GitHub registry
-      run: dotnet nuget push /home/runner/work/html2openxml/html2openxml/artifacts/HtmlToOpenXml.dll.${{ steps.get_version.outputs.VERSION }}.nupkg -k ${{secrets.NUGET_SECRET_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols true
+      run: dotnet nuget push /home/runner/work/html2openxml/html2openxml/artifacts/Microting.HtmlToOpenXml.dll.${{ steps.get_version.outputs.VERSION }}.nupkg -k ${{secrets.NUGET_SECRET_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols true

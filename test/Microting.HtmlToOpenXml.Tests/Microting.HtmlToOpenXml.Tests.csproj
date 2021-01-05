@@ -7,7 +7,6 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\src\Html2OpenXml\HtmlToOpenXml.snk</AssemblyOriginatorKeyFile>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
-    <RootNamespace>HtmlToOpenXml.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,15 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\**\*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Html2OpenXml\Microting.HtmlToOpenXml.csproj" />
+    <EmbeddedResource Include="Resources\**\*" />
   </ItemGroup>
 
 </Project>

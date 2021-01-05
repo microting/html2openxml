@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore /p:Configuration=Release HtmlToOpenXml.sln
     - name: Test
-      run: dotnet test ./test/HtmlToOpenXml.Tests/HtmlToOpenXml.Tests.csproj --verbosity n
+      run: dotnet test ./test/Microting.HtmlToOpenXml.Tests/Microting.HtmlToOpenXml.Tests.csproj --verbosity n

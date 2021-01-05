@@ -72,7 +72,26 @@ namespace HtmlToOpenXml
 			{
 				// change the way the background-color renders. It now uses Shading instead of Highlight.
 				// Changes brought by Wude on http://html2openxml.codeplex.com/discussions/277570
-				styleAttributes.Add(new Shading { Val = ShadingPatternValues.Clear, Fill = colorValue.ToHexString() });
+
+				// check if we're currently running the background on a <span> or an other element
+				// this makes sure we use highlighting on text & shading on all other elements
+				// as users expect highlighting on text. Fixed by DynaSpan (issue #79)
+				bool colorParsed = false;
+
+				if (en.CurrentTag == "<span>")
+				{
+					// Get highlight color
+					var highlightColor = HighlightColor.Parse(colorValue);
+
+					if (highlightColor != HighlightColorValues.None)
+					{
+						styleAttributes.Add(new Highlight{ Val = highlightColor });
+						colorParsed = true;
+					} 
+				}
+				
+				if (!colorParsed)
+					styleAttributes.Add(new Shading { Val = ShadingPatternValues.Clear, Fill = colorValue.ToHexString() });
 			}
 
 			var decorations = Converter.ToTextDecoration(en.StyleAttributes["text-decoration"]);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HtmlToOpenXml
 {
@@ -14,6 +15,18 @@ namespace HtmlToOpenXml
         {
             HtmlColor color = HtmlColor.Empty;
             namedColors.TryGetValue(htmlColor, out color);
+            return color;
+        }
+
+        public static string FromHtmlColor (HtmlColor htmlColor)
+        {
+            string color = "";
+
+            if (namedColors.ContainsValue(htmlColor))
+            {
+                color = namedColors.FirstOrDefault(x => x.Value.Equals(htmlColor)).Key;
+            }
+
             return color;
         }
 

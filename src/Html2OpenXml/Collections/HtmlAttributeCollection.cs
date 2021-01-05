@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace HtmlToOpenXml
 {
@@ -132,6 +133,15 @@ namespace HtmlToOpenXml
 		public HtmlColor GetAsColor(String name)
 		{
 			return HtmlColor.Parse(this[name]);
+		}
+
+		/// <summary>
+		/// Returns a <cref>HighlighColorValues</cref> which can be used within 
+		/// OpenXML
+		/// </summary>
+		public HighlightColorValues GetAsHighlightColor(String name)
+		{
+			return HighlightColor.Parse(this[name]);
 		}
 
 		/// <summary>

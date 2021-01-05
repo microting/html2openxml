@@ -1,10 +1,10 @@
 /* Copyright (C) Olivier Nizet https://github.com/onizet/html2openxml - All Rights Reserved
- * 
+ *
  * This source is subject to the Microsoft Permissive License.
  * Please see the License.txt file for more information.
  * All other rights reserved.
- * 
- * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -18,7 +18,7 @@ namespace HtmlToOpenXml
     public class DefaultStyles
     {
         #region Caption
-        
+
         /// <summary>
         /// Default style for captions
         /// </summary>
@@ -67,6 +67,13 @@ namespace HtmlToOpenXml
         /// </summary>
         /// <value>Heading</value>
         public string HeadingStyle { get; set; } = "Heading";
+
+        /// <summary>
+        /// Default style for numbered headings
+        /// Appends the level at the end of the style name
+        /// </summary>
+        /// <value>NumberedHeading</value>
+        public string NumberedHeadingStyle { get; set; } = "NumberedHeading";
 
         #endregion
 

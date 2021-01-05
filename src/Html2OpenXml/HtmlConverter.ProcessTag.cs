@@ -1,10 +1,10 @@
 /* Copyright (C) Olivier Nizet https://github.com/onizet/html2openxml - All Rights Reserved
- * 
+ *
  * This source is subject to the Microsoft Permissive License.
  * Please see the License.txt file for more information.
  * All other rights reserved.
- * 
- * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -284,6 +284,10 @@ namespace HtmlToOpenXml
 			// Make sure we only grab the heading if it starts with a number
 			if (regexMatch.Groups.Count > 1 && regexMatch.Groups[1].Captures.Count > 0)
 			{
+				// Apply numbered heading style
+				p.InsertInProperties(prop =>
+					prop.ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.NumberedHeadingStyle + level, StyleValues.Paragraph) });
+
 				int indentLevel = regexMatch.Groups[1].Captures.Count;
 
 				// Strip numbers from text
@@ -291,10 +295,16 @@ namespace HtmlToOpenXml
 
 				htmlStyles.NumberingList.ApplyNumberingToHeadingParagraph(p, indentLevel);
 			}
+			else
+			{
+				// Apply normal heading style
+				p.InsertInProperties(prop =>
+					prop.ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.HeadingStyle + level, StyleValues.Paragraph) });
+			}
 
 			htmlStyles.Paragraph.ApplyTags(p);
 			htmlStyles.Paragraph.EndTag("<h" + level + ">");
-			
+
 			this.elements.Clear();
 			AddParagraph(p);
 			AddParagraph(currentParagraph = htmlStyles.Paragraph.NewParagraph());
@@ -340,7 +350,7 @@ namespace HtmlToOpenXml
 			// in order to kept the <hr>, we force an empty run
             currentParagraph.Append(new Run());
 
-            currentParagraph.InsertInProperties(prop => 
+            currentParagraph.InsertInProperties(prop =>
 				prop.ParagraphBorders = new ParagraphBorders {
 					TopBorder = new TopBorder() { Val = BorderValues.Single, Size = 4U }
 				});
@@ -1157,7 +1167,7 @@ namespace HtmlToOpenXml
 
 			TableCell cell = new TableCell();
 			if (properties.HasChildren) cell.TableCellProperties = properties;
-                  
+
             // The heightUnit value used to append a height to the TableRowHeight.
             var row = tables.CurrentTable.GetLastChild<TableRow>();
 

@@ -6,4 +6,4 @@ install:
   - dotnet restore HtmlToOpenXml.sln
 script:
   - dotnet build /p:Configuration=Release HtmlToOpenXml.sln
-  - dotnet test ./test/HtmlToOpenXml.Tests/HtmlToOpenXml.Tests.csproj
+  - dotnet test ./test/Microting.HtmlToOpenXml.Tests/Microting.HtmlToOpenXml.Tests.csproj

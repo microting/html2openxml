@@ -145,7 +145,7 @@ namespace HtmlToOpenXml
 			if (sectionProperties != null)
 			{
 				sectionProperties.Remove();
-				body.Append(sectionProperties);
+				body.AddChild(sectionProperties);
 			}
 		}
 
@@ -320,7 +320,6 @@ namespace HtmlToOpenXml
 			}
 
 
-			Run markerRun;
             Paragraph p;
 			fpart.Footnotes.Append(
 				new Footnote(
@@ -328,7 +327,7 @@ namespace HtmlToOpenXml
 						new ParagraphProperties {
 							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.FootnoteTextStyle, StyleValues.Paragraph) }
 						},
-						markerRun = new Run(
+						new Run(
 							new RunProperties {
 								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.FootnoteReferenceStyle, StyleValues.Character) }
 							},
@@ -422,14 +421,13 @@ namespace HtmlToOpenXml
 				endnotesRef++;
 			}
 
-			Run markerRun;
 			fpart.Endnotes.Append(
 				new Endnote(
 					new Paragraph(
 						new ParagraphProperties {
 							ParagraphStyleId = new ParagraphStyleId() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.EndnoteTextStyle, StyleValues.Paragraph) }
 						},
-						markerRun = new Run(
+						new Run(
 							new RunProperties {
 								RunStyle = new RunStyle() { Val = htmlStyles.GetStyle(htmlStyles.DefaultStyles.EndnoteReferenceStyle, StyleValues.Character) }
 							},
@@ -525,7 +523,7 @@ namespace HtmlToOpenXml
 				new wp.Inline(
 					new wp.Extent() { Cx = widthInEmus, Cy = heightInEmus },
 					new wp.EffectExtent() { LeftEdge = 19050L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 0L },
-					new wp.DocProperties() { Id = drawingObjId, Name = imageSource, Description = String.Empty },
+					new wp.DocProperties() { Id = drawingObjId, Name = "Picture " + imageObjId, Description = String.Empty },
 					new wp.NonVisualGraphicFrameDrawingProperties {
 						GraphicFrameLocks = new a.GraphicFrameLocks() { NoChangeAspect = true }
 					},
@@ -533,7 +531,7 @@ namespace HtmlToOpenXml
 						new a.GraphicData(
 							new pic.Picture(
 								new pic.NonVisualPictureProperties {
-									NonVisualDrawingProperties = new pic.NonVisualDrawingProperties() { Id = imageObjId, Name = imageSource, Description = alt },
+									NonVisualDrawingProperties = new pic.NonVisualDrawingProperties() { Id = imageObjId, Name = DataUri.IsWellFormed(imageSource) ? string.Empty : imageSource, Description = alt },
 									NonVisualPictureDrawingProperties = new pic.NonVisualPictureDrawingProperties(
 										new a.PictureLocks() { NoChangeAspect = true, NoChangeArrowheads = true })
 								},
